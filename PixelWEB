@@ -6,11 +6,6 @@ DAEMON_ARGS="-demo -p $CONFIG_DIR"
 
 start() {
         echo -n "Starting PixelWEB: "
-
-        # If the configuration directory does not exist, initialize the config
-        if [ ! -e "$CONFIG_DIR" ]; then
-                initialize
-        fi
         
         # Start the PIXELWEB daemon
         start-stop-daemon --start --quiet --exec $DAEMON --background -- $DAEMON_ARGS
@@ -31,16 +26,6 @@ stop() {
         return $RETVAL
 }
 
-#initialize() {
-#        # Use an externalized configuration directory for editing
-#        mkdir -p "$CONFIG_DIR" || exit 1
-#
-#        # Copy example config file
-#        cp "/usr/share/ledspicer/doc/examples/ledspicer.conf" "$CONFIG_DIR/ledspicer.conf" || exit 1
-#
-#        # Copy the /usr/share/ledspicer configs
-#        rsync -aq --exclude="doc" "/usr/share/ledspicer/" "$CONFIG_DIR" || exit 1
-#}
 
 case "$1" in
         start)
