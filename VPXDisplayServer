@@ -1,0 +1,80 @@
+#!/bin/sh
+
+DAEMON="/userdata/system/configs/vpinball/vpxds/vpxds"
+CONFIG_DIR="/userdata/system/configs/vpinball/vpxds"
+ES_SCRIPT="/userdata/system/configs/emulationstation/scripts/game-selected/"
+
+start() {
+        echo -n "Starting VPXDS: "
+
+        # If the configuration directory does not exist, initialize the config
+        if [ ! -e "$CONFIG_DIR" ]; then
+                initialize
+        fi
+        
+        # If the ES Script does not exist, download the file
+        if [ ! -e "$ES_SCRIPT/game-selected.sh" ]; then
+                es_script
+        fi
+        
+        # Start the VPXDS daemon
+        start-stop-daemon --start --quiet --exec $DAEMON --background
+        RETVAL=$?
+
+	echo "done"
+        return $RETVAL
+}
+
+stop() {
+        echo -n "Stopping VPXDS: "
+
+        # Stop the VPCDS daemon
+        start-stop-daemon --stop --quiet --exec $DAEMON
+	RETVAL=$?
+	
+        echo "done"
+        return $RETVAL
+}
+
+initialize() {
+        # Create the configuration directory
+        mkdir -p "$CONFIG_DIR" || exit 1
+
+        # Download & Install the VPXDS Package
+        cd "$CONFIG_DIR" || exit 1
+        wget -q https://github.com/jsm174/vpxds/releases/download/vpxds-0.0.1/vpxds-0-0-1-linux-x64.tar.gz || exit 1
+        tar -zxvf vpxds-0-0-1-linux-x64.tar.gz || exit 1
+
+        # Clean the installation package
+        rm vpxds-0-0-1-linux-x64.tar.gz || exit 1
+
+}
+
+es_script () {
+        # Check Create the configuration directory
+        if [ ! -d "$ES_SCRIPT" ]; then
+            # Create the configuration directory
+            mkdir -p "$ES_SCRIPT" || exit 1
+        else
+            echo "$ES_SCRIPT folder already exist"
+        fi
+
+        # Download the ES Script
+        cd "$ES_SCRIPT" || exit 1
+        wget -q https://github.com/jsm174/vpxds/blob/master/scripts/batocera/emulationstation/scripts/game-selected/game-selected.sh || exit 1
+        chmod +x game-selected.sh
+}
+
+case "$1" in
+        start)
+                start
+                ;;
+        stop)
+                stop
+                ;;
+        *)
+                echo "Usage: $0 {start|stop}"
+                exit 1
+esac
+
+exit $?
