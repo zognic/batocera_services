@@ -61,7 +61,7 @@ es_script () {
 
         # Download the ES Script
         cd "$ES_SCRIPT" || exit 1
-        wget -q https://github.com/jsm174/vpxds/blob/master/scripts/batocera/emulationstation/scripts/game-selected/game-selected.sh || exit 1
+        wget -q https://raw.githubusercontent.com/jsm174/vpxds/master/scripts/batocera/emulationstation/scripts/game-selected/game-selected.sh || exit 1
         chmod +x game-selected.sh
 }
 
